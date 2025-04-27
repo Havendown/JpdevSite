@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Store - FiveM</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #0d0d0d;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, rgba(30, 144, 255, 0.8), rgba(0, 191, 255, 0)), 
+            url('https://i.pinimg.com/736x/4d/79/d6/4d79d6bef684367052b409e2ef9a9ede.jpg') no-repeat center;
+            background-size: cover;
+            padding: 50px 20px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        header p {
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .banner-container {
+            width: 100%;
+            overflow: hidden;
+            padding: 20px 0;
+            background: #000000;
+            display: block;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .banner {
+            height: 200px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            display: block;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .banner:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(30, 144, 255, 0.3);
+        }
+
+        .banner-content {
+            padding: 0;
+        }
+
+        .banner h2 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .banner p {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #ccc;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #1e90ff, #00bfff);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            border: 2px solid #1e90ff;
+            box-shadow: 0 4px 10px rgba(30, 144, 255, 0.3);
+            transition: transform 0.3s, background 0.3s, box-shadow 0.3s, color 0.3s;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+            z-index: 0;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:hover {
+            transform: scale(1.1);
+            background: linear-gradient(135deg, #00bfff, #1e90ff);
+            box-shadow: 0 6px 15px rgba(0, 191, 255, 0.5);
+            color: #fff;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Estilo do Modal */
+        .modal {
+            display: none; /* Oculto por padrão */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(30, 144, 255, 0.3);
+        }
+
+        .modal h2 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            color: #1e90ff;
+        }
+
+        .modal p {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            color: #ccc;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5em;
+            color: #fff;
+            cursor: pointer;
+            background: none;
+            border: none;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #1e90ff;
+        }
+
+        nav {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 20px;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #1e90ff;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: #1e90ff;
+            left: 0;
+            bottom: -5px;
+            transition: width 0.3s ease-in-out;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        @keyframes pulse {
+            0% { text-shadow: 0 0 5px #1e90ff; }
+
+            50% { text-shadow: 0 0 15px #1e90ff, 0 0 25px #00bfff; }
+
+            100% { text-shadow: 0 0 5px #1e90ff; }
+        }
+
+        nav a:hover {
+            animation: pulse 1.7s infinite;
+        }
+
+        .section {
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .script-card {
+            background: #1a1a1a;
+            padding: 25px;
+            border-radius: 10px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            overflow: hidden;
+        }
+
+        .script-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(30, 144, 255, 0.2);
+        }
+
+        .script-card h3 {
+            color: #1e90ff;
+            margin-bottom: 15px;
+        }
+
+        .script-card p {
+            margin-bottom: 15px;
+        }
+
+        .media-container {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .media-container img,
+        .media-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .media-container video {
+            background: #000;
+        }
+
+        #contato .contact-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        footer {
+            background-color: #1a1a1a;
+            padding: 20px;
+            text-align: center;
+            animation: bordless 2s infinite ;
+        }
+
+        @keyframes bordless {
+    0% {
+       filter: drop-shadow(  0px 7px 0 rgba(0, 191, 255, 0.4));
+    }
+    25% {
+        filter: drop-shadow( 0px 7px 15px rgba(0, 191, 255, 0.6));
+    }
+    50% {
+       filter: drop-shadow(  0px 7px 15px rgba(0, 191, 255, 0.8));
+    }
+    50% {
+        filter: drop-shadow( 0px 7px 15px rgba(0, 191, 255, 1.0));
+    }
+    }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>CodeLab Five - FIVEM_SCRIPTS</h1>
+        <p>Elevando seu servidor com scripts de última geração</p>
+    </header>
+
+    <div class="banner-container">
+        <div class="banner" style="background-image: url('https://i.pinimg.com/736x/5d/4c/7b/5d4c7beadae6c7f2baa890ad11bb6c1e.jpg');">
+            <div class="banner-content">
+                <h2>Promoção Especial!</h2>
+                <p>20% de desconto em todos os scripts esta semana!</p>
+                <a href="#" class="btn" onclick="openModal('promocao')">Saiba Mais</a>
+            </div>
+        </div>
+        <div class="banner" style="background-image: url('https://i.pinimg.com/736x/f6/0c/5a/f60c5af952c303ec41b7dee2d04ae216.jpg');">
+            <div class="banner-content">
+                <h2>Novo Lançamento</h2>
+                <p>Confira nosso novo sistema de missões!</p>
+                <a href="#" class="btn" onclick="openModal('lancamento')">Veja Agora</a>
+            </div>
+        </div>
+        <div class="banner" style="background-image: url('https://i.pinimg.com/736x/8d/95/ac/8d95ac4350c0a45243a5bfa96d0284a9.jpg');">
+            <div class="banner-content">
+                <h2>Oferta Exclusiva</h2>
+                <p>Desconto especial em pacotes premium!</p>
+                <a href="#" class="btn" onclick="openModal('oferta')">Saiba Mais</a>
+            </div>
+        </div>
+        <div class="banner" style="background-image: url('https://i.pinimg.com/736x/f6/0c/5b/f60c5bb9cebf0b15d6de6ec980656dd2.jpg');">
+            <div class="banner-content">
+                <h2>Atualização Recente</h2>
+                <p>Novas funcionalidades no sistema de lojas!</p>
+                <a href="#" class="btn" onclick="openModal('atualizacao')">Veja Agora</a>
+            </div>
+        </div>
+    </div>
+
+    <nav>
+        <a href="#home">Início</a>
+        <a href="#portfolio">Portfólio</a>
+        <a href="#sobre">Sobre</a>
+        <a href="#contato">Contato</a>
+    </nav>
+
+    <div class="section" id="home">
+        <h2>Bem-vindo à Script Store</h2>
+        <p>Desenvolvemos scripts modernos e otimizados para FiveM, trazendo vida ao seu servidor com funcionalidades únicas.</p>
+    </div>
+    <div class="section" id="portfolio">
+        <h2>Nosso Portfólio</h2>
+        <div class="portfolio-grid">
+            <div class="script-card">
+                <h3>Sistema de Garagem</h3>
+                <div class="media-container">
+                    <img src="https://media.giphy.com/media/3o7TKz2bC8kP4QzVUk/giphy.gif" alt="Garagem GIF">
+                </div>
+                <p>Gerenciamento de veículos com interface fluida e personalizável.</p>
+            </div>
+            <div class="script-card">
+                <h3>Scripts Sobrenaturais</h3>
+                <div class="media-container">
+                    <video autoplay muted loop>
+                        <source src="https://i.gifer.com/BHFO.mp4" type="video/mp4">
+                        Seu navegador não suporta vídeos.
+                    </video>
+                </div>
+                <p>Tenha uma variedade de scripts sobrenaturais para seu servidor FiveM.</p>
+            </div>
+            <div class="script-card">
+                <h3>Sistema de Lojas</h3>
+                <div class="media-container">
+                    <img src="https://media.giphy.com/media/26FPJGjAwuS6DpoR2/giphy.gif" alt="Lojas GIF">
+                </div>
+                <p>Lojas interativas com estoque dinâmico e fácil configuração.</p>
+            </div>
+            <div class="script-card">
+                <h3>Admin Tools</h3>
+                <div class="media-container">
+                    <video autoplay muted loop>
+                        <source src="https://i.gifer.com/fxVE.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <p>Ferramentas avançadas para gerenciar seu servidor com eficiência.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="sobre">
+        <h2>Sobre Nós</h2>
+        <p>Somos uma equipe apaixonada por FiveM, com anos de experiência criando soluções inovadoras para a comunidade de RP.</p>
+    </div>
+
+    <div class="section" id="contato">
+        <h2>Entre em Contato</h2>
+        <p>Quer um script personalizado ou suporte? Fale conosco!</p>
+        <div class="contact-buttons">
+            <a href="Jpdevvpssistem@gmail.com" class="btn">Email</a>
+            <a href="https://discord.gg/zaDg52dQpB" target="_blank" class="btn">Discord</a>
+        </div>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2 id="modal-title"></h2>
+            <p id="modal-text"></p>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 Script Store - Todos os direitos reservados</p>
+    </footer>
+
+    <script>
+        function openModal(type) {
+            const modal = document.getElementById('modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalText = document.getElementById('modal-text');
+
+
+            switch (type) {
+                case 'promocao':
+                    modalTitle.textContent = 'Detalhes da Promoção';
+                    modalText.textContent = 'Aproveite 20% de desconto em todos os scripts da nossa loja durante esta semana! Use o código PROMO20 no checkout. Oferta válida até 15/03/2025.';
+                    break;
+                case 'lancamento':
+                    modalTitle.textContent = 'Novo Sistema de Missões';
+                    modalText.textContent = 'Explore o nosso novo sistema de missões com recompensas dinâmicas e missões personalizáveis. Disponível agora para download!';
+                    break;
+                case 'oferta':
+                    modalTitle.textContent = 'Oferta Exclusiva';
+                    modalText.textContent = 'Ganhe 30% de desconto em pacotes premium ao adquirir até o final do mês. Entre em contato para mais detalhes!';
+                    break;
+                case 'atualizacao':
+                    modalTitle.textContent = 'Atualização Recente';
+                    modalText.textContent = 'A nova funcionalidade no sistema de lojas inclui estoque dinâmico e interface renovada. Atualize agora!';
+                    break;
+            }
+
+            modal.style.display = 'flex'; // Exibe o modal
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            modal.style.display = 'none'; // Oculta o modal
+        }
+
+        // Fecha o modal ao clicar fora dele
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
